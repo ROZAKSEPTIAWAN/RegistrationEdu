@@ -1,5 +1,7 @@
 package com.regedu.service;
 
-public class userService {
+import antlr.collections.List;
 
+public interface userService {
+List datas();
 }
