@@ -13,11 +13,5 @@ import com.regedu.model.User;
 
 public interface daoUser extends JpaRepository<User,String>
 {
-	
-
-
-	   	
 	   	User findByUsername (String username);
-	
-	
 }
