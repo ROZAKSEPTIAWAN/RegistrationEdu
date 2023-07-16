@@ -1,0 +1,227 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Spring Boot AJAX jQuery CRUD</title>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<!-- jQuery Modal -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+	<style>
+			#msg {
+		  margin: 10px;
+		  padding: 30px;
+		  color: #fff;
+		  font-size: 18px;
+		  font-weight: bold;
+		  background: -moz-linear-gradient(top, #2e5764, #1e3d47);
+		  background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #1e3d47),color-stop(1, #2e5764));
+		}
+	</style>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			
+		
+
+			$.getJSON('http://localhost:8080/allRegistrationDatas', function(json) {
+				var tr=[];
+				for (var i = 0; i < json.length; i++) {
+					tr.push('<tr>');
+					tr.push('<td>' + json[i].idRegistrasi + '</td>');
+					tr.push('<td>' + json[i].no_ujian + '</td>');
+					tr.push('<td>' + json[i].lokasi_ujian + '</td>');
+					tr.push('<td>' + json[i].tanggal_ujian + '</td>');
+					tr.push('<td>' + json[i].tempat_lahir + '</td>');
+					tr.push('<td>' + json[i].nama + '</td>');
+					tr.push('<td>' + json[i].tanggal_lahir + '</td>');
+					tr.push('<td>' + json[i].gender + '</td>');
+					tr.push('<td>' + json[i].no_telepon + '</td>');
+					
+					tr.push('<td><button class=\'edit\'>Edit</button>&nbsp;&nbsp;<button class=\'delete\' id=' + json[i].id + '>Delete</button></td>');
+					tr.push('</tr>');
+				}
+				$('table').append($(tr.join('')));
+			});
+			
+			$(document).delegate('#addNew', 'click', function(event) {
+				event.preventDefault();
+				
+				var idRegistrasi = document.getElementById('idseqs').value;
+				var noUjian = document.getElementById('noUjian').value;
+				var  lokasi_ujian = document.getElementById('lokasiUjian').value;
+				var tanggal_ujian = document.getElementById('Tanggal_ujian').value;
+				var nama = document.getElementById('nama').value;
+				var TempatLahirs = document.getElementById('TempatLahir').value;
+				var tanggal_lahir = document.getElementById('TanggalLahir').value;
+				var gender = document.getElementById('Gender').value;
+				var no_telepon = document.getElementById('NoTelepon').value;
+				
+
+				
+				$.ajax({
+					type: "POST",
+					contentType: "application/json; charset=utf-8",
+					url: "http://localhost:8080/Save",
+					data: JSON.stringify
+					(
+							{'idRegistrasi': idRegistrasi,
+							 'no_ujian': noUjian,
+							 'lokasi_ujian' :lokasi_ujian,
+							 'tanggal_ujian' : tanggal_ujian,
+							 'nama':nama,
+							 'tempat_lahir' : TempatLahirs,
+							 'tanggal_lahir' : tanggal_lahir,
+							 'gender' : gender,
+							 'no_telepon' : no_telepon
+							 
+							}
+					),
+					cache: false,
+					success: function(result) {
+						$("#msg").html( "<span style='color: green'>Company added successfully</span>" );
+						window.setTimeout(function(){location.reload()},1000)
+					},
+					error: function(err) {
+						$("#msg").html( "<span style='color: red'>Name is required</span>" );
+					}
+				});
+			});
+			
+			$(document).delegate('.delete', 'click', function() { 
+				if (confirm('Do you really want to delete record?')) {
+					var id = $(this).attr('id');
+					var parent = $(this).parent().parent();
+					$.ajax({
+						type: "DELETE",
+						url: "http://localhost:8080/company/delete/" + id,
+						cache: false,
+						success: function() {
+							parent.fadeOut('slow', function() {
+								$(this).remove();
+							});
+							location.reload(true)
+						},
+						error: function() {
+							$('#err').html('<span style=\'color:red; font-weight: bold; font-size: 30px;\'>Error deleting record').fadeIn().fadeOut(4000, function() {
+								$(this).remove();
+							});
+						}
+					});
+				}
+			});
+			
+			$(document).delegate('.edit', 'click', function() {
+				var parent = $(this).parent().parent();
+				
+				var id = parent.children("td:nth-child(1)");
+				var name = parent.children("td:nth-child(2)");
+				var buttons = parent.children("td:nth-child(3)");
+				
+				name.html("<input type='text' id='txtName' value='" + name.html() + "'/>");
+				buttons.html("<button id='save'>Save</button>&nbsp;&nbsp;<button class='delete' id='" + id.html() + "'>Delete</button>");
+			});
+			
+			$(document).delegate('#save', 'click', function() {
+				var parent = $(this).parent().parent();
+				
+				var id = parent.children("td:nth-child(1)");
+				var name = parent.children("td:nth-child(2)");
+				var buttons = parent.children("td:nth-child(3)");
+				
+				$.ajax({
+					type: "POST",
+					contentType: "application/json; charset=utf-8",
+					url: "http://localhost:8080/company/save",
+					data: JSON.stringify({'id' : id.html(), 'name' : name.children("input[type=text]").val()}),
+					cache: false,
+					success: function() {
+						name.html(name.children("input[type=text]").val());
+						buttons.html("<button class='edit' id='" + id.html() + "'>Edit</button>&nbsp;&nbsp;<button class='delete' id='" + id.html() + "'>Delete</button>");
+					},
+					error: function() {
+						$('#err').html('<span style=\'color:red; font-weight: bold; font-size: 30px;\'>Error updating record').fadeIn().fadeOut(4000, function() {
+							$(this).remove();
+						});
+					}
+				});
+			});
+
+		});
+	</script>
+</head>
+<body>
+
+	<h2>Spring Boot AJAX jQuery CRUD</h2>
+	
+	<p><a class='btn' href="#add" rel="modal:open">Add New Company</a></p>
+
+	<table border="1" cellspacing="0" cellpadding="5">
+		<tr>
+			<th>Id</th>
+			<th>no ujian</th>
+			<th>loc ujian</th>
+			<th>Tanggal_ujian</th>
+						<th>TempatLahir</th>
+			<th>nama</th>
+
+			<th>TanggalLahir</th>
+			<th>Gender</th>
+			<th>NoTelepon</th>
+			<th>Actions</th>
+		</tr>
+	</table>
+	<div id='msg'/>
+		<p>Add a New Company</p>
+		<h5>
+			<label>id Registrasi</label>
+			<input type="text" id="idseqs" name="idseqs" th:value="${idsequence}">
+		</h5>
+		
+		<p>
+			<label>No Ujian</label>
+		<input type="text"  id="noUjian" name="noUjian" th:value="${noUjian}"  />
+		</p>
+		
+				<p>
+			<label>Lokasi  Ujian</label>
+		<input type="text"  id="lokasiUjian" name="lokasiUjian"  value = "jkt-a-23"/>
+		</p>
+		
+				<p>
+			<label>Tanggal ujian</label>
+		<input type="date"  id="Tanggal_ujian" name="Tanggal_ujian"  />
+		</p>
+		
+						<p>
+			<label>nama</label>
+		<input type="text"  id="nama" name="nama"   />
+
+		</p>
+		
+		<p>
+			<label>Tempat lahir</label>
+		<input type="text"  id="TempatLahir" name="TempatLahir"  />
+		</p>		
+		
+		<p>
+			<label>Tanggal Lahir</label>
+		<input type="date"  id="TanggalLahir" name="TanggalLahir"   />
+		</p>
+		
+		<p>
+			<label>Gender</label>
+		<input type="text"  id="Gender" name="Gender"  />
+		</p>
+		
+		<p>
+			<label>No Telepon</label>
+		<input type="text"  id="NoTelepon" name="NoTelepon"    />
+		</p>
+
+		<p>
+			<input type="submit" id="addNew" value="Submit">
+		</p>
+
+
+</body>
+</html>

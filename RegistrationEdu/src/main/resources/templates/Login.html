@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+	<form id="loginform">
+		<label for="username">username </label> 
+		<input type="text" id="username" name="username"><br>
+		<label for="password">Password:</label>
+		<input type="password" id="password" name="password"><br>
+		<br>
+		<input type="submit" value="Login">
+	</form>
+	
+
+	
+	<script>
+	const loginForm = document.getElementById("loginform");
+    loginForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        login(username, password);
+     });
+    
+    $('#test').hide();
+    
+    function login(username, password) {
+        fetch('/login', {
+           method: 'POST',
+           headers: {
+              'Content-Type': 'application/json'
+           },
+           body: JSON.stringify({username, password})
+        })
+        .then(response => {
+           if (response.ok) {
+              const token = response.headers.get('Authorization');
+              localStorage.setItem('token', token);
+              window.location.href = 'Dashboard';
+           } else {
+              alert('Invalid username or password');
+           }
+        })
+        .catch(error => console.error(error));
+     }
+	</script>
+</body>
+</html>
