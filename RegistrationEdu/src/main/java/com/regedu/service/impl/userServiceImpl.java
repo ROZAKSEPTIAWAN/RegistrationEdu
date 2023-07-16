@@ -15,7 +15,6 @@ import com.regedu.dao.paymentprocess;
 import com.regedu.model.ParentsDB;
 import com.regedu.model.PaymentDB;
 import com.regedu.model.RegistStudentDB;
-import com.regedu.model.StudentsDB;
 import com.regedu.model.User;
 import com.regedu.service.userService;
 import org.springframework.web.server.ResponseStatusException;
@@ -38,19 +37,19 @@ public class userServiceImpl implements userService {
 	@Override
 	public User authenticate(String user, String pass) {
 
-		User users = daouser.findByUsername(user);
-		if (users != null && users.getPassword().equals(pass)) {
-			return users;
-		} else {
+//		User users = daouser.findByUsername(user);
+//		if (users != null && users.getPassword().equals(pass)) {
+//			return users;
+//		} else {
 			return null;
-		}
+//		}
 
 	}
 
 	@Override
 	public void registerData(RegistStudentDB regist) {
 
-		if (regist.getIdRegistrasi() == null || regist.getIdRegistrasi().isEmpty()) {
+		if (regist.getId_registrasi()== null || regist.getId_registrasi().isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nama mahasiswa tidak boleh kosong");
 		} else {
 			daoregistrasi.save(regist);
@@ -60,6 +59,7 @@ public class userServiceImpl implements userService {
 
 	@Override
 	public List<RegistStudentDB> getAllRegistrationData() {
+	
 
 		return daoregistrasi.findAll();
 	}
@@ -91,6 +91,8 @@ public class userServiceImpl implements userService {
 	@Override
 	public void registParents(ParentsDB parentsRegist) {
 		// TODO Auto-generated method stub
+		
+		
 
 	}
 
@@ -103,8 +105,8 @@ public class userServiceImpl implements userService {
 		{
 			int uang_pangkal = PaymentsPay.getUang_pangkal();
 			int formulir = PaymentsPay.getFormulir();
-			int angsuranPertama = PaymentsPay.getAngsuranPertama();
-			int angsuranKedua = PaymentsPay.getAngsuranKedua();
+			int angsuranPertama = PaymentsPay.getAngsuran_pertama();
+			int angsuranKedua = PaymentsPay.getAngsuran_kedua();
 			int totalbayar = uang_pangkal+angsuranPertama+angsuranKedua+formulir;
 			if (totalbayar == 12000000)
 			{
@@ -120,8 +122,9 @@ public class userServiceImpl implements userService {
 		}
 		else
 		{
-			String noInvoice = PaymentsPay.getNoInvoice();
-			int dataTotalDb = paymentproces.findDataTotal(noInvoice);
+			String noInvoice = PaymentsPay.getNo_invoice();
+//			int dataTotalDb = paymentproces.findDataTotal(noInvoice);
+			int dataTotalDb = 0;
 			int dataTotal = PaymentsPay.getTotal_bayar();
 			
 			if (dataTotalDb == dataTotal)
@@ -134,11 +137,7 @@ public class userServiceImpl implements userService {
 
 	}
 
-	@Override
-	public void students(StudentsDB StudentsAdd) {
-		// TODO Auto-generated method stub
 
-	}
 	
 //	<!DOCTYPE html>
 //	<html>
