@@ -3,6 +3,7 @@ package com.regedu.controller;
 
 import java.util.List;
 
+import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.regedu.model.RegistStudentDB;
 import com.regedu.model.User;
 import com.regedu.service.userService;
+import com.regedu.vo.RegiststudentVo;
+import com.regedu.vo.registTemp;
 import com.regedu.vo.voUser;
 
 @Controller
@@ -26,12 +29,20 @@ public class Rest {
 
     @PostMapping("/login")
     public ResponseEntity<User> login(@RequestBody voUser voUsers) {
-        User user = UserService.authenticate(voUsers.getUsername(), voUsers.getPassword());
-        if (user != null) {
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    	User user = UserService.authenticate(voUsers.getUsername(), voUsers.getPassword());
+    	try
+    	{
+           
+            if (user != null) {
+                return ResponseEntity.ok(user);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+    	}catch(Exception ex)
+    	{
+    		Logger.getMessageLogger(null, null, null);
+    	}
+    	return ResponseEntity.ok(user);
     }
     
     @GetMapping("/maulogin")
@@ -58,11 +69,14 @@ public class Rest {
 		 return new ResponseEntity<Void>(HttpStatus.OK);
     }
     
+    
+    
     @GetMapping("/allRegistrationDatas")
-    public ResponseEntity  <List <RegistStudentDB>>  getAllRegistration ()
+    public ResponseEntity    getAllRegistration (Model model)
     {
-
-		return new ResponseEntity<List <RegistStudentDB>> (UserService.getAllRegistrationData(),HttpStatus.OK);
+    	List<registTemp> dataList = UserService.getAllRegistrationData();
+    
+    	return new ResponseEntity<List <registTemp>> (UserService.getAllRegistrationData(),HttpStatus.OK);
     }
 
     

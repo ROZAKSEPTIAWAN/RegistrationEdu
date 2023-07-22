@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class RegistStudentDB {
 	
 	@Id
-	private String id_registrasi;
+	private String idRegistrasi;
 	
 	private String gender;
 	
@@ -28,12 +28,14 @@ public class RegistStudentDB {
 	
 	private Date tanggal_ujian;
 	
-	public String getId_registrasi() {
-		return id_registrasi;
+
+
+	public String getIdRegistrasi() {
+		return idRegistrasi;
 	}
 
-	public void setId_registrasi(String id_registrasi) {
-		this.id_registrasi = id_registrasi;
+	public void setIdRegistrasi(String idRegistrasi) {
+		this.idRegistrasi = idRegistrasi;
 	}
 
 	public String getGender() {

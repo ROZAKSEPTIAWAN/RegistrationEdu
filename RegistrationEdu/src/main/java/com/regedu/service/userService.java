@@ -11,6 +11,8 @@ import com.regedu.model.PaymentDB;
 import com.regedu.model.RegistStudentDB;
 //import com.regedu.model.StudentsDB;
 import com.regedu.model.User;
+import com.regedu.vo.RegiststudentVo;
+import com.regedu.vo.registTemp;
 import com.regedu.vo.voUser;
 
 
@@ -27,7 +29,7 @@ public interface userService {
 	public void registParents (ParentsDB parentsRegist);
 	public void payments (PaymentDB PaymentsPay,  String idData);
 //	public void students (StudentsDB StudentsAdd);
-	public List<RegistStudentDB> getAllRegistrationData();
+	public List<registTemp> getAllRegistrationData();
 	public String dataId();
 	public String dataUjian();
 } 

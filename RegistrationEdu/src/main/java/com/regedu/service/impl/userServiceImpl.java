@@ -19,6 +19,8 @@ import com.regedu.model.User;
 import com.regedu.service.userService;
 import org.springframework.web.server.ResponseStatusException;
 import com.regedu.vo.RegiststudentVo;
+import com.regedu.vo.registTemp;
+import com.regedu.vo.validasiVo;
 import com.regedu.vo.voUser;
 
 @Service
@@ -37,37 +39,96 @@ public class userServiceImpl implements userService {
 	@Override
 	public User authenticate(String user, String pass) {
 
-//		User users = daouser.findByUsername(user);
-//		if (users != null && users.getPassword().equals(pass)) {
-//			return users;
-//		} else {
-			return null;
-//		}
+		User users = daouser.findByUsername(user);
+		if (users != null && users.getPassword().equals(pass)) {
+			return users;
+		} else {
+			return null;		}
 
 	}
 
 	@Override
 	public void registerData(RegistStudentDB regist) {
-
-		if (regist.getId_registrasi()== null || regist.getId_registrasi().isEmpty()) {
+		
+		if (regist.getIdRegistrasi()== null || regist.getIdRegistrasi().isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nama mahasiswa tidak boleh kosong");
 		} else {
-			daoregistrasi.save(regist);
+			daoregistrasi.findAlls();
 		}
 
 	}
 
 	@Override
-	public List<RegistStudentDB> getAllRegistrationData() {
-	
-
-		return daoregistrasi.findAll();
+	public List<registTemp> getAllRegistrationData() {
+		String role = "";
+		List<registTemp> datasFix = daoregistrasi.findAlls();
+		List<registTemp> dataTemp  = daoregistrasi.findTemp();
+		for (registTemp obj :dataTemp)
+		{
+			System.out.println("MASUK SINI 1");
+			obj.setUsername(obj.getUsername());
+			obj.setPassword(obj.getPassword());
+			String user = obj.getUsername();
+			System.out.println("ISI USER _________"+user);
+			List <validasiVo> dataValidasi = daoregistrasi.validasi(user);
+			System.out.println("ISI dataValidasi _________"+dataValidasi.size());
+			if (dataValidasi.size()>0)
+			{
+				role = "ACTIVE";
+			}
+			else
+			{
+				role = "NOT ACTIVE";
+			}
+			obj.setRole(role);
+			
+		}
+		
+		for (registTemp objFinal :datasFix )
+		{
+			System.out.println("MASUK SINI 1");
+			for (registTemp objTemp : dataTemp)
+			{
+				System.out.println("MASUK SINI 2");
+				if(objFinal.getIdRegistrasi().equals(objTemp.getUsername()))
+				{
+					System.out.println("MASUK SINI 3");
+					String isi = objTemp.getRole();
+					System.out.println("isi ROLE 3"+isi);
+					objFinal.setNo_telepon(objTemp.getRole());
+					break;
+				}
+			}
+		}
+		
+		for (registTemp objTemp : dataTemp)
+		{
+			System.out.println("MASUK SINI 4");
+			String isi = objTemp.getRole();
+			System.out.println("isi ROLE 4"+isi);
+			 boolean isExist = false;
+			 for (registTemp objFinal :datasFix)
+			 {
+				 System.out.println("MASUK SINI 5");
+				 if (objFinal.getNo_telepon().equals(objTemp.getRole()))
+				 {
+					 System.out.println("MASUK SINI 6");
+					 isExist = true;
+					 break;
+				 }
+			 }
+             if (!isExist) {
+            	 System.out.println("MASUK SINI 7");
+            	 datasFix.add(objTemp.clone());
+             }
+		}
+		return datasFix;
 	}
 
 	@Override
 	public String dataId() {
 		int seqId = 000;
-		List<RegistStudentDB> totalId = daoregistrasi.findAll();
+		List<registTemp> totalId = daoregistrasi.findAlls();
 		int dataid = totalId.size() + 1;
 		seqId = dataid;
 
@@ -79,7 +140,7 @@ public class userServiceImpl implements userService {
 	@Override
 	public String dataUjian() {
 		int seqId = 000;
-		List<RegistStudentDB> totalId = daoregistrasi.findAll();
+		List<registTemp> totalId = daoregistrasi.findAlls();
 		int dataid = totalId.size() + 1;
 		seqId = dataid;
 
