@@ -5,6 +5,8 @@ public class voUser {
 	  private String password;
 	  private String username ;
 	  private String userId;
+
+
 	public String getPassword() {
 		return password;
 	}
